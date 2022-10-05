@@ -1,7 +1,7 @@
 pipeline {
     agent {
         docker {
-            image 'node:6-alpine'
+            agent { docker { image 'node:8.12.0' } }
             args '-p 3000:3000'
         }
     }
@@ -13,3 +13,4 @@ pipeline {
         }
     }
 }
+// /home/Desktop/PROJECT/TRAINING2022/cicd_tutorial
