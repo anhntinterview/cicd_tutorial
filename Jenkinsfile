@@ -16,7 +16,7 @@ pipeline {
         }
         stage('Test') { 
             steps {
-                sh "echo 'The following "npm" command (if executed) installs the "cross-env"' dependency into the local "node_modules" directory, which will ultimately"
+                sh './jenkins/scripts/test.sh' 
             }
         }
     }
