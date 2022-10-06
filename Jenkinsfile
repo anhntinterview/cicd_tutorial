@@ -44,7 +44,7 @@ pipeline {
         // }
         stage('Production') {
             steps {
-                withAWS(region:'us-east-1', credentials:'') {
+                withAWS(region:'us-east-1', credentials:'1') {
                     s3Delete(bucket: '221004-anhntaws-bucket', path:'**/*')
                     s3Upload(bucket: '221004-anhntaws-bucket', workingDir:'build', includePathPattern:'**/*')
                 }
