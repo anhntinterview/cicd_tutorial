@@ -44,10 +44,11 @@ pipeline {
         // }
         stage('Production') {
             steps {
-                withAWS(region:'us-east-1', credentials:'1') {
-                    s3Delete(bucket: '221004-anhntaws-bucket', path:'**/*')
-                    s3Upload(bucket: '221004-anhntaws-bucket', workingDir:'build', includePathPattern:'**/*')
-                }
+                sh 'aws s3 sync build/ s3://221004-anhntaws-bucket'
+                // withAWS(region:'us-east-1', credentials:'1') { //credentials: was create from Jenkins Configuration. It is Jenkins Credential ID
+                //     s3Delete(bucket: '221004-anhntaws-bucket', path:'**/*')
+                //     s3Upload(bucket: '221004-anhntaws-bucket', workingDir:'build', includePathPattern:'**/*')
+                // }
             }
         }
     }
