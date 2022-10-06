@@ -1,33 +1,30 @@
 pipeline {
     agent {
-        docker { image 'node:16.13.1-alpine' }
+        docker {
+            image 'node:lts-buster-slim'
+            args '-p 3000:3000'
+        }
+    }
+    environment {
+        CI = 'true'
     }
     stages {
+        stage('Build') {
+            steps {
+                sh 'npm install'
+            }
+        }
         stage('Test') {
             steps {
-                sh 'node --version'
+                sh './scripts/test.sh'
+            }
+        }
+        stage('Deliver') {
+            steps {
+                sh './scripts/deliver.sh'
+                input message: 'Finished using the web site? (Click "Proceed" to continue)'
+                sh './scripts/kill.sh'
             }
         }
     }
 }
-
-// pipeline {
-//     agent any
-//     environment { 
-//         CC = 'clang'
-//     }
-//     stages {
-//         stage('Example') {
-//             environment { 
-//                 DEBUG_FLAGS = '-g'
-//             }
-//             steps {
-//                 echo "Running ${env.BUILD_ID}, ${env.BUILD_NUMBER} on ${env.JENKINS_URL}"
-//                 echo "Running ${env.BUILD_TAG}, ${env.BUILD_URL}, ${env.EXECUTOR_NUMBER} "
-//                 echo "Running ${env.JOB_NAME}, ${env.NODE_NAME}, ${env.WORKSPACE} "
-//                 sh 'printenv'
-//             }
-//         }
-//     }
-// }
-// /home/Desktop/PROJECT/TRAINING2022/cicd_tutorial
