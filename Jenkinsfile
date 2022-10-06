@@ -7,6 +7,8 @@ pipeline {
     }
     environment {
         CI = 'true'
+        HOME = '.'
+        npm_config_cache = 'npm-cache'
     }
     stages {
         stage('Build') {
@@ -14,16 +16,38 @@ pipeline {
                 sh 'npm install'
             }
         }
-        stage('Test') { 
-            steps {
-                sh './jenkins/scripts/test.sh' 
+        stage('Test and Build') {
+            parallel {
+                stage('Run Tests') {
+                    steps {
+                        sh 'npm run test'
+                    }
+                }
+                stage('Create Build Artifacts') {
+                    steps {
+                        sh 'npm run build'
+                    }
+                }
             }
         }
-        stage('Deliver') {
+        // stage('Test') {
+        //     steps {
+        //         sh './jenkins/scripts/test.sh'
+        //     }
+        // }
+        // stage('Deliver') {
+        //     steps {
+        //         sh './jenkins/scripts/deliver.sh'
+        //         input message: 'Finished using the web site? (Click "Proceed" to continue)'
+        //         sh './jenkins/scripts/kill.sh'
+        //     }
+        // }
+        stage('Production') {
             steps {
-                sh './jenkins/scripts/deliver.sh'
-                input message: 'Finished using the web site? (Click "Proceed" to continue)'
-                sh './jenkins/scripts/kill.sh'
+                withAWS(region:'us-east-1', credentials:'') {
+                    s3Delete(bucket: '221004-anhntaws-bucket', path:'**/*')
+                    s3Upload(bucket: '221004-anhntaws-bucket', workingDir:'build', includePathPattern:'**/*')
+                }
             }
         }
     }
